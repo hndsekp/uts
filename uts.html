@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="id">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,52 +8,90 @@
       rel="stylesheet"
     />
     <title>UTS Alhendes</title>
+
+    <style>
+      .shape {
+        margin: 20px auto;
+        display: none; /* 🔥 awalnya disembunyikan */
+        transition: all 0.3s ease;
+      }
+
+      .persegiPanjang {
+        width: 150px;
+        height: 100px;
+        background-color: #5a89cf;
+      }
+
+      .segitiga {
+        width: 0;
+        height: 0;
+        border-left: 75px solid transparent;
+        border-right: 75px solid transparent;
+        border-bottom: 130px solid #cf0b1e;
+      }
+    </style>
   </head>
-  <body>
+
+  <body class="bg-light">
     <div class="container mt-5">
       <div class="row justify-content-center">
         <div class="col-md-6 col-lg-4">
           <div class="card shadow-lg">
-            <div
-              class="card-header text-center"
-              style="background-color: #09637e; color: white"
-            >
-              Kalkulator Bangun Datar
+            <div class="card-header text-center" style="background-color: #09637E; color: white;">
+              Kalkulator Luas Bangun Datar
             </div>
+
             <div class="card-body">
               <div class="mb-3">
                 <label>Pilih Bangun Datar</label>
-                <div>
-                  <div class="col-md-6 mb-3">
-                    <input type="checkbox" name="" id="persegiPanjang" />
-                    <label>Persegi Panjang</label>
-                  </div>
-                  <div class="col-md-6 mb-3">
-                    <input type="checkbox" name="" id="segitiga" />
-                    <label>Segitiga</label>
-                  </div>
-                </div>
-
-                <hr />
-                <div class="mb-3">
-                  <label>Panjang / Alas</label>
-                  <input type="number" id="angkaPertama" class="form-control" />
-                </div>
-                <div class="mb-3">
-                  <label>Lebar / Tinggi</label>
-                  <input type="number" id="angkaKedua" class="form-control" />
-                </div>
+                <select class="form-select" id="pilih">
+                  <option value="" selected disabled>
+                    -- Pilih Bangun Datar --
+                  </option>
+                  <option value="persegiPanjang">Persegi Panjang</option>
+                  <option value="segitiga">Segitiga</option>
+                </select>
               </div>
+
+              <div class="text-center">
+                <div id="shape" class="shape"></div>
+              </div>
+
+              <hr />
+
+              <div class="mb-3">
+                <label id="label1">-</label>
+                <input
+                  type="number"
+                  id="input1"
+                  class="form-control"
+                  placeholder="Masukkan nilai"
+                />
+              </div>
+
+              <div class="mb-3">
+                <label id="label2">-</label>
+                <input
+                  type="number"
+                  id="input2"
+                  class="form-control"
+                  placeholder="Masukkan nilai"
+                />
+              </div>
+
               <button
+                id="btnHitung"
+                class="btn btn-primary w-100"
                 onclick="hitung()"
-                class="btn w-100"
-                style="background-color: #497979; color: white"
+                disabled
               >
                 Hitung
               </button>
+
               <hr />
+
               <h5>Hasil</h5>
-              <p>Luas : <span id="hasil">-</span></p>
+              <p>Luas : <span id="hasil">-</span> cm²</p>
             </div>
           </div>
         </div>
@@ -61,29 +99,76 @@
     </div>
 
     <script>
-      function hitung() {
-        const segitiga = document.getElementById("segitiga");
-        const persegiPanjang = document.getElementById("persegiPanjang");
-        const n1 = parseFloat(document.getElementById("angkaPertama").value);
-        const n2 = parseFloat(document.getElementById("angkaKedua").value);
+      const pilih = document.getElementById("pilih");
+      const label1 = document.getElementById("label1");
+      const label2 = document.getElementById("label2");
+      const input1 = document.getElementById("input1");
+      const input2 = document.getElementById("input2");
+      const hasil = document.getElementById("hasil");
+      const shape = document.getElementById("shape");
+      const btn = document.getElementById("btnHitung");
 
-        if (isNaN(n1) || isNaN(n2)) {
-          alert("Mohon Isi Semua Kolom!!");
+      const config = {
+        persegiPanjang: {
+          label1: "Panjang (cm)",
+          label2: "Lebar (cm)",
+          class: "persegiPanjang",
+          hitung: (a, b) => a * b,
+        },
+        segitiga: {
+          label1: "Alas (cm)",
+          label2: "Tinggi (cm)",
+          class: "segitiga",
+          hitung: (a, b) => 0.5 * a * b,
+        },
+      };
+
+      pilih.addEventListener("change", function () {
+        const selected = pilih.value;
+
+        if (!config[selected]) return;
+
+        // aktifkan tombol
+        btn.disabled = false;
+
+        // tampilkan shape
+        shape.style.display = "block";
+        shape.className = "shape " + config[selected].class;
+
+        // update label
+        label1.textContent = config[selected].label1;
+        label2.textContent = config[selected].label2;
+
+        // placeholder
+        input1.placeholder =
+          "Masukkan " + config[selected].label1.toLowerCase();
+        input2.placeholder =
+          "Masukkan " + config[selected].label2.toLowerCase();
+
+        // reset
+        input1.value = "";
+        input2.value = "";
+        hasil.textContent = "-";
+      });
+
+      function hitung() {
+        const selected = pilih.value;
+
+        if (!selected) {
+          alert("Pilih bangun datar dulu!");
           return;
         }
 
-        if (persegiPanjang) {
-          const hasilPersegi = n1 * n2;
-          document.getElementById("hasil").innerText = hasilPersegi;
-        } else if (segitiga) {
-          const hasilSegitiga = 0.5 * n1 * n2;
-          document.getElementById("hasil").innerText = hasilSegitiga;} 
-        else {
-          alert("Mohon Pilih Bangun Datar");
+        const a = parseFloat(input1.value);
+        const b = parseFloat(input2.value);
+
+        if (isNaN(a) || isNaN(b)) {
+          alert("Masukkan angka yang valid!");
+          return;
         }
 
-        
-       
+        const luas = config[selected].hitung(a, b);
+        hasil.textContent = luas.toFixed(0);
       }
     </script>
   </body>

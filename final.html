@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <title>Kalkulator Bangun Datar</title>
+</head>
+
+<body class="bg-light">
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6 col-lg-4">
+        <div class="card shadow-lg">
+
+          <!-- HEADER -->
+          <div class="card-header text-center" style="background-color: #09637E; color: white;">
+            Kalkulator Bangun Datar
+          </div>
+
+          <div class="card-body">
+
+            <!-- SELECT -->
+            <div class="mb-3">
+              <label for="pilih">Pilih Bangun Datar</label>
+              <select class="form-select" id="pilih">
+                <option value="" disabled selected>-- Pilih Bangun Datar --</option>
+                <option value="persegiPanjang">Persegi Panjang</option>
+                <option value="segitiga">Segitiga</option>
+              </select>
+            </div>
+
+            <hr>
+
+            <!-- INPUT 1 -->
+            <div class="mb-3">
+              <label id="label1">-</label>
+              <input
+                type="number"
+                class="form-control"
+                id="input1"
+                placeholder="Masukkan nilai"
+              />
+            </div>
+
+            <!-- INPUT 2 -->
+            <div class="mb-3">
+              <label id="label2">-</label>
+              <input
+                type="number"
+                class="form-control"
+                id="input2"
+                placeholder="Masukkan nilai"
+              />
+            </div>
+
+            <!-- BUTTON -->
+            <button id="btnHitung" class="btn btn-primary w-100" onclick="hitung()" disabled style="background-color: #088395; color: white;">
+              Hitung
+            </button>
+
+            <hr>
+
+            <!-- HASIL -->
+            <h5>Hasil</h5>
+            <p>Luas : <span id="hasil">-</span></p>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const pilih = document.getElementById("pilih");
+    const label1 = document.getElementById("label1");
+    const label2 = document.getElementById("label2");
+    const input1 = document.getElementById("input1");
+    const input2 = document.getElementById("input2");
+    const hasil = document.getElementById("hasil");
+    const btn = document.getElementById("btnHitung");
+
+    // 🔥 Config (pusat semua logika)
+    const config = {
+      persegiPanjang: {
+        label1: "Panjang",
+        label2: "Lebar",
+        hitung: (a, b) => a * b
+      },
+      segitiga: {
+        label1: "Alas",
+        label2: "Tinggi",
+        hitung: (a, b) => 0.5 * a * b
+      }
+    };
+
+    // 🎯 Saat user memilih
+    pilih.addEventListener("change", function () {
+      const selected = pilih.value;
+
+      // aktifkan tombol
+      btn.disabled = false;
+
+      // update label
+      label1.textContent = config[selected].label1;
+      label2.textContent = config[selected].label2;
+
+      // update placeholder
+      input1.placeholder = "Masukkan " + config[selected].label1.toLowerCase();
+      input2.placeholder = "Masukkan " + config[selected].label2.toLowerCase();
+
+      // reset input & hasil
+      input1.value = "";
+      input2.value = "";
+      hasil.textContent = "-";
+    });
+
+    // 🧠 Fungsi hitung
+    function hitung() {
+      const selected = pilih.value;
+
+      if (!selected) {
+        alert("Silakan pilih bangun datar terlebih dahulu!");
+        return;
+      }
+
+      const a = parseFloat(input1.value);
+      const b = parseFloat(input2.value);
+
+      if (isNaN(a) || isNaN(b)) {
+        alert("Masukkan angka yang valid!");
+        return;
+      }
+
+      const luas = config[selected].hitung(a, b);
+      hasil.textContent = luas.toFixed(0);
+    }
+  </script>
+
+</body>
+</html>
